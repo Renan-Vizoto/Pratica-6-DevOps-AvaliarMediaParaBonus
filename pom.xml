@@ -11,7 +11,7 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.avaliarMedia</groupId>
+    <groupId>com.avaliarMedia</groupId> 
     <artifactId>avaliar-media-para-bonus</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>avaliar-media-para-bonus</name>
@@ -47,6 +47,13 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- MySQL Database -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
         <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -72,6 +79,23 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>21</source>
+                    <target>21</target>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+
+            <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
@@ -81,6 +105,27 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-eclipse-plugin</artifactId>
+                <version>2.10</version>
+                <configuration>
+                    <downloadSources>true</downloadSources>
+                    <downloadJavadocs>true</downloadJavadocs>
+                    <additionalConfig>
+                        <file>
+                            <name>.settings/org.eclipse.jdt.apt.core.prefs</name>
+                            <content>
+                                eclipse.preferences.version=1
+                                org.eclipse.jdt.apt.aptEnabled=true
+                                org.eclipse.jdt.apt.genSrcDir=target/generated-sources/annotations
+                                org.eclipse.jdt.apt.reconcileEnabled=true
+                            </content>
+                        </file>
+                    </additionalConfig>
                 </configuration>
             </plugin>
 
