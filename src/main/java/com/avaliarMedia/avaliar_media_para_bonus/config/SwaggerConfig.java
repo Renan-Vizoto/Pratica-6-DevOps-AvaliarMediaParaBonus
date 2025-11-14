@@ -25,8 +25,8 @@ public class SwaggerConfig {
                 .info(new Info()
                         .title("API - Avaliar Média para Bônus")
                         .version("1.0.0")
-                        .description("API REST para avaliação de média de alunos e cálculo de cursos bônus. " +
-                                   "Se a média do aluno for maior que 7.0, ele recebe 3 cursos bônus. " +
+                        .description("API REST para avaliação de alunos e cálculo de cursos bônus. " +
+                                   "Se a nota do aluno for maior que 7.0, ele recebe 3 cursos bônus. " +
                                    "Caso contrário, não recebe nenhum bônus.")
                         .contact(new Contact()
                                 .name("Equipe DevOpsQA")

@@ -9,17 +9,17 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.List;
-
 /**
  * Entidade JPA para persistência de Avaliação.
+ * 
+ * Regra de Negócio:
+ * - O aluno tem 1 nota de 1 curso
+ * - Se nota > 7.0, ganha 3 cursos bônus
  * 
  * @Entity: Marca como entidade JPA
  * @Table: Define nome da tabela
  * @OneToOne: Relacionamento 1:1 com Aluno
  * @JoinColumn: Define a coluna de chave estrangeira
- * @ElementCollection: Permite armazenar lista de valores simples (notas)
- * @CollectionTable: Define tabela para a coleção
  */
 @Entity
 @Table(name = "avaliacao")
@@ -41,12 +41,7 @@ public class AvaliacaoEntity {
     @JoinColumn(name = "aluno_id", nullable = false, unique = true)
     private AlunoEntity aluno;
     
-    @ElementCollection
-    @CollectionTable(name = "avaliacao_notas", joinColumns = @JoinColumn(name = "avaliacao_id"))
-    @Column(name = "nota")
-    private List<Double> notas;
-    
-    @Column(name = "media_final")
-    private Double mediaFinal;
+    @Column(name = "nota", nullable = false)
+    private Double nota;
 }
 

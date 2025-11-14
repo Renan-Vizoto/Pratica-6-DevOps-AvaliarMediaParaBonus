@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Serviço para calcular e verificar bônus de cursos.
- * Implementa a regra de negócio: média > 7.0 = 3 cursos bônus, caso contrário = 0.
+ * Implementa a regra de negócio: Se nota > 7.0, o aluno ganha 3 cursos bônus.
  */
 @Service
 @Transactional(readOnly = true)
@@ -24,7 +24,9 @@ public class BonusService {
     private final AvaliacaoRepository avaliacaoRepository;
     
     /**
-     * Calcula o bônus baseado na média do aluno.
+     * Calcula o bônus baseado na nota do aluno.
+     * Se nota > 7.0, o aluno ganha 3 cursos bônus.
+     * Caso contrário, não ganha nada.
      * 
      * @param alunoId ID do aluno
      * @return BonusResponseDTO com informações sobre elegibilidade e quantidade de bônus
@@ -36,29 +38,30 @@ public class BonusService {
         Avaliacao avaliacao = avaliacaoRepository.findByAlunoId(alunoId)
                 .orElseThrow(() -> new RuntimeException("Avaliação não encontrada para aluno ID: " + alunoId));
         
-        if (avaliacao.getMediaFinal() == null) {
-            throw new RuntimeException("Média final não calculada para aluno ID: " + alunoId);
+        if (avaliacao.getNota() == null) {
+            throw new RuntimeException("Nota não encontrada para aluno ID: " + alunoId);
         }
         
-        // Usa Value Objects para calcular bônus
-        Media media = new Media(avaliacao.getMediaFinal());
-        QuantidadeCursos quantidade = QuantidadeCursos.calcular(media.getValor());
+        // Calcula bônus baseado na nota
+        QuantidadeCursos quantidade = QuantidadeCursos.calcularPorNota(avaliacao.getNota());
+        boolean elegivel = quantidade.getQuantidade() > 0;
         
         return BonusResponseDTO.builder()
                 .alunoId(aluno.getId())
                 .nomeAluno(aluno.getNome())
-                .mediaFinal(media.getValor())
-                .elegivel(media.isElegivelParaBonus())
+                .nota(avaliacao.getNota())
+                .elegivel(elegivel)
                 .quantidadeCursosBonus(quantidade.getQuantidade())
-                .descricao(gerarDescricao(media.getValor(), quantidade.getQuantidade()))
+                .descricao(gerarDescricao(avaliacao.getNota(), quantidade.getQuantidade()))
                 .build();
     }
     
-    private String gerarDescricao(Double media, Integer quantidade) {
-        if (quantidade > 0) {
-            return String.format("Parabéns! Com média %.1f, você ganhou %d cursos bônus!", media, quantidade);
+    private String gerarDescricao(Double nota, Integer quantidadeBonus) {
+        if (quantidadeBonus > 0) {
+            return String.format("Parabéns! Com nota %.1f (maior que 7.0), você ganhou %d cursos bônus!", 
+                               nota, quantidadeBonus);
         } else {
-            return String.format("Média %.1f não é suficiente para bônus. Necessário média superior a 7.0", media);
+            return String.format("Nota %.1f não é suficiente para bônus. Necessário nota superior a 7.0", nota);
         }
     }
 }

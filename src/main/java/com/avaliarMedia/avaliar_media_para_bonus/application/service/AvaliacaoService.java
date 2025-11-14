@@ -11,7 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Serviço de aplicação para gerenciar Avaliações.
- * Contém a lógica de negócio para cálculo de média e bônus.
+ * Contém a lógica de negócio para avaliação de alunos.
+ * 
+ * Regra: O aluno tem 1 nota de 1 curso.
  */
 @Service
 @Transactional
@@ -27,11 +29,8 @@ public class AvaliacaoService {
         
         Avaliacao avaliacao = Avaliacao.builder()
                 .aluno(aluno)
-                .notas(dto.getNotas())
+                .nota(dto.getNota())
                 .build();
-        
-        // Calcula a média final
-        avaliacao.calcularMedia();
         
         Avaliacao saved = avaliacaoRepository.save(avaliacao);
         return toDTO(saved);
@@ -53,8 +52,7 @@ public class AvaliacaoService {
         return AvaliacaoDTO.builder()
                 .id(avaliacao.getId())
                 .alunoId(avaliacao.getAluno().getId())
-                .notas(avaliacao.getNotas())
-                .mediaFinal(avaliacao.getMediaFinal())
+                .nota(avaliacao.getNota())
                 .build();
     }
 }

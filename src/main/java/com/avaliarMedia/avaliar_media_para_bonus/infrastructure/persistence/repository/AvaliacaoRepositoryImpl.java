@@ -50,8 +50,7 @@ public class AvaliacaoRepositoryImpl implements AvaliacaoRepository {
         return AvaliacaoEntity.builder()
                 .id(avaliacao.getId())
                 .aluno(alunoEntity)
-                .notas(avaliacao.getNotas())
-                .mediaFinal(avaliacao.getMediaFinal())
+                .nota(avaliacao.getNota())
                 .build();
     }
     
@@ -65,8 +64,7 @@ public class AvaliacaoRepositoryImpl implements AvaliacaoRepository {
         return Avaliacao.builder()
                 .id(entity.getId())
                 .aluno(aluno)
-                .notas(entity.getNotas())
-                .mediaFinal(entity.getMediaFinal())
+                .nota(entity.getNota())
                 .build();
     }
 }

@@ -9,6 +9,10 @@ import lombok.ToString;
  * Value Object que representa a quantidade de cursos bônus.
  * Imutável e sem identidade própria.
  * 
+ * Regra de Negócio:
+ * - Se nota > 7.0, o aluno ganha 3 cursos bônus
+ * - Se nota <= 7.0, o aluno não ganha bônus (0 cursos)
+ * 
  * Importância dos recursos Lombok:
  * - @Getter: Elimina necessidade de escrever métodos getters manualmente
  * - @EqualsAndHashCode: Permite comparação correta entre objetos (importante para collections)
@@ -24,10 +28,15 @@ public class QuantidadeCursos {
     private final Integer quantidade;
     
     /**
-     * Cria quantidade de cursos bônus baseado na média
+     * Calcula quantidade de cursos bônus baseado na nota.
+     * Se nota > 7.0, retorna 3 cursos bônus.
+     * Caso contrário, retorna 0.
+     * 
+     * @param nota Nota do curso
+     * @return QuantidadeCursos com a quantidade calculada
      */
-    public static QuantidadeCursos calcular(Double media) {
-        if (media != null && media > 7.0) {
+    public static QuantidadeCursos calcularPorNota(Double nota) {
+        if (nota != null && nota > 7.0) {
             return new QuantidadeCursos(3);
         }
         return new QuantidadeCursos(0);

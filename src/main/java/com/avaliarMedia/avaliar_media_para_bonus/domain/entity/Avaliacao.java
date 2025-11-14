@@ -8,11 +8,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.List;
-
 /**
  * Entidade de Domínio que representa uma Avaliação.
  * Possui identidade única (ID) e relacionamento com Aluno.
+ * 
+ * Regra de Negócio:
+ * - O aluno tem 1 nota de 1 curso
+ * - Se nota > 7.0, ganha 3 cursos bônus
+ * - Se nota <= 7.0, não ganha bônus
  * 
  * Importância dos recursos Lombok:
  * - @Getter/@Setter: Automatiza acesso aos campos, mantendo encapsulamento
@@ -36,18 +39,6 @@ public class Avaliacao {
     
     private Aluno aluno;
     
-    private List<Double> notas; // Lista de notas para cálculo da média
-    
-    private Double mediaFinal;
-    
-    /**
-     * Calcula a média final baseada nas notas
-     */
-    public void calcularMedia() {
-        if (notas != null && !notas.isEmpty()) {
-            double soma = notas.stream().mapToDouble(Double::doubleValue).sum();
-            this.mediaFinal = soma / notas.size();
-        }
-    }
+    private Double nota; // Nota do curso (única)
 }
 

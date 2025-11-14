@@ -1,17 +1,17 @@
 package com.avaliarMedia.avaliar_media_para_bonus.application.dto;
 
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 /**
  * DTO para Avaliação.
  * Recebe dados da requisição HTTP e transfere para camada de serviço.
+ * 
+ * Regra: O aluno tem 1 nota de 1 curso.
+ * Se nota > 7.0, ganha 3 cursos bônus.
  */
 @Data
 @Builder
@@ -24,10 +24,7 @@ public class AvaliacaoDTO {
     @NotNull(message = "ID do aluno é obrigatório")
     private Long alunoId;
     
-    @NotNull(message = "Lista de notas é obrigatória")
-    @Size(min = 1, message = "Deve ter pelo menos uma nota")
-    private List<Double> notas;
-    
-    private Double mediaFinal;
+    @NotNull(message = "Nota é obrigatória")
+    private Double nota;
 }
 

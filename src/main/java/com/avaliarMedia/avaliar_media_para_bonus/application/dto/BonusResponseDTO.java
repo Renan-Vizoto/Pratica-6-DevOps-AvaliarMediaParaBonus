@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 /**
  * DTO de resposta para cálculo de bônus.
  * Retorna informações sobre elegibilidade e quantidade de cursos bônus.
+ * 
+ * Regra: Se nota > 7.0, aluno ganha 3 cursos bônus.
  */
 @Data
 @Builder
@@ -17,7 +19,7 @@ public class BonusResponseDTO {
     
     private Long alunoId;
     private String nomeAluno;
-    private Double mediaFinal;
+    private Double nota;
     private Boolean elegivel;
     private Integer quantidadeCursosBonus;
     private String descricao;
