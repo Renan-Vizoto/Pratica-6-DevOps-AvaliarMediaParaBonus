@@ -31,3 +31,29 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Logs ###
+*.log
+logs/
+
+### Arquivos de Sistema ###
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+### Arquivos de Configuração Sensíveis ###
+# Credenciais e configurações locais (se necessário)
+# application-local.properties
+# application-prod.properties
+
+### Arquivos Gerados ###
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+jacoco.exec
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.properties
