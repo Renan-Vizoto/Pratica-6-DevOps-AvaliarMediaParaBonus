@@ -38,10 +38,8 @@ pipeline {
             }
             post {
                 always {
-                    // Testes (JUnit)
                     junit 'target/surefire-reports/**/*.xml'
 
-                    // Jacoco + Quality Gate 70%
                     jacoco(
                         execPattern: 'target/jacoco.exec',
                         classPattern: 'target/classes',
@@ -52,7 +50,6 @@ pipeline {
                         minimumInstructionCoverage: '70'
                     )
 
-                    // Arquivo gerado (jar)
                     archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
                 }
             }
@@ -66,7 +63,6 @@ pipeline {
         success {
             echo 'O build foi concluído com SUCESSO! Disparando job de imagem Docker...'
 
-            // 🔥 CHAMA O FREESTYLE QUE VOCÊ CRIOU
             build job: 'pipeline-avaliacao-bonus-dev-docker', wait: false
         }
         failure {
