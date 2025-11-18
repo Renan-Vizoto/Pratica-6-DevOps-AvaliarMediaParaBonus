@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  api:
+    container_name: avaliar-media-para-bonus
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: avaliar-media-para-bonus:latest
+    ports:
+      - "8080:8080"
+    environment:
+      # Mesmo que você já tenha no Dockerfile, aqui você pode sobrescrever se precisar
+      SPRING_PROFILES_ACTIVE: "default"
+      JAVA_OPTS: ""
+    restart: unless-stopped
