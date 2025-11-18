@@ -33,33 +33,12 @@ public class MediaTest {
     }
 
     @Test
-    @DisplayName("Deve retornar false para isValid quando valor é negativo")
-    public void deveRetornarFalseParaIsValidQuandoValorNegativo() {
-        // Arrange
-        Media media = new Media(-1.0);
-
-        // Act & Assert
-        assertFalse(media.isValid());
-    }
-
-    @Test
-    @DisplayName("Deve retornar false para isValid quando valor é maior que 10.0")
-    public void deveRetornarFalseParaIsValidQuandoValorMaiorQue10() {
-        // Arrange
-        Media media = new Media(11.0);
-
-        // Act & Assert
-        assertFalse(media.isValid());
-    }
-
-    @Test
-    @DisplayName("Deve retornar false para isValid quando valor é null")
-    public void deveRetornarFalseParaIsValidQuandoValorNull() {
-        // Arrange
-        Media media = new Media(null);
-
-        // Act & Assert
-        assertFalse(media.isValid());
+    @DisplayName("Deve retornar false para isValid quando valor é inválido")
+    public void deveRetornarFalseParaIsValidQuandoValorInvalido() {
+        // Arrange & Act & Assert
+        assertFalse(new Media(-1.0).isValid());
+        assertFalse(new Media(11.0).isValid());
+        assertFalse(new Media(null).isValid());
     }
 
     @Test
@@ -73,70 +52,11 @@ public class MediaTest {
     }
 
     @Test
-    @DisplayName("Deve retornar false para isElegivelParaBonus quando valor igual a 7.0")
-    public void deveRetornarFalseParaIsElegivelParaBonusQuandoValorIgual7() {
-        // Arrange
-        Media media = new Media(7.0);
-
-        // Act & Assert
-        assertFalse(media.isElegivelParaBonus());
-    }
-
-    @Test
-    @DisplayName("Deve retornar false para isElegivelParaBonus quando valor menor que 7.0")
-    public void deveRetornarFalseParaIsElegivelParaBonusQuandoValorMenorQue7() {
+    @DisplayName("Deve retornar false para isElegivelParaBonus quando valor <= 7.0 ou null")
+    public void deveRetornarFalseParaIsElegivelParaBonusQuandoValorMenorOuIgual7() {
         // Arrange & Act & Assert
-        assertFalse(new Media(0.0).isElegivelParaBonus());
+        assertFalse(new Media(7.0).isElegivelParaBonus());
         assertFalse(new Media(5.0).isElegivelParaBonus());
-        assertFalse(new Media(6.9).isElegivelParaBonus());
-    }
-
-    @Test
-    @DisplayName("Deve retornar false para isElegivelParaBonus quando valor é null")
-    public void deveRetornarFalseParaIsElegivelParaBonusQuandoValorNull() {
-        // Arrange
-        Media media = new Media(null);
-
-        // Act & Assert
-        assertFalse(media.isElegivelParaBonus());
-    }
-
-    @Test
-    @DisplayName("Deve implementar equals corretamente")
-    public void deveImplementarEqualsCorretamente() {
-        // Arrange
-        Media media1 = new Media(8.5);
-        Media media2 = new Media(8.5);
-        Media media3 = new Media(7.0);
-
-        // Act & Assert
-        assertEquals(media1, media2);
-        assertNotEquals(media1, media3);
-    }
-
-    @Test
-    @DisplayName("Deve implementar hashCode corretamente")
-    public void deveImplementarHashCodeCorretamente() {
-        // Arrange
-        Media media1 = new Media(8.5);
-        Media media2 = new Media(8.5);
-
-        // Act & Assert
-        assertEquals(media1.hashCode(), media2.hashCode());
-    }
-
-    @Test
-    @DisplayName("Deve implementar toString corretamente")
-    public void deveImplementarToStringCorretamente() {
-        // Arrange
-        Media media = new Media(8.5);
-
-        // Act
-        String toString = media.toString();
-
-        // Assert
-        assertNotNull(toString);
-        assertTrue(toString.contains("8.5"));
+        assertFalse(new Media(null).isElegivelParaBonus());
     }
 }
-

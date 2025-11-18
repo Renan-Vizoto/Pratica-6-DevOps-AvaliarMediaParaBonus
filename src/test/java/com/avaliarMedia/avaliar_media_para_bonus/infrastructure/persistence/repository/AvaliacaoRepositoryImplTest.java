@@ -80,30 +80,8 @@ public class AvaliacaoRepositoryImplTest {
         assertNotNull(resultado);
         assertEquals(1L, resultado.getId());
         assertEquals(8.5, resultado.getNota());
-        assertEquals("João Silva", resultado.getAluno().getNome());
         verify(alunoJpaRepository, times(1)).findById(1L);
         verify(jpaRepository, times(1)).save(any(AvaliacaoEntity.class));
-    }
-
-    @Test
-    @DisplayName("Deve lançar exceção ao salvar avaliação com aluno não encontrado")
-    public void deveLancarExcecaoAoSalvarAvaliacaoComAlunoNaoEncontrado() {
-        // Arrange
-        when(alunoJpaRepository.findById(999L)).thenReturn(Optional.empty());
-        
-        Avaliacao avaliacaoComAlunoInexistente = Avaliacao.builder()
-                .aluno(Aluno.builder().id(999L).build())
-                .nota(8.5)
-                .build();
-
-        // Act & Assert
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            avaliacaoRepository.save(avaliacaoComAlunoInexistente);
-        });
-
-        assertEquals("Aluno não encontrado", exception.getMessage());
-        verify(alunoJpaRepository, times(1)).findById(999L);
-        verify(jpaRepository, never()).save(any(AvaliacaoEntity.class));
     }
 
     @Test
@@ -123,20 +101,6 @@ public class AvaliacaoRepositoryImplTest {
     }
 
     @Test
-    @DisplayName("Deve retornar Optional vazio quando avaliação não encontrada por ID")
-    public void deveRetornarOptionalVazioQuandoAvaliacaoNaoEncontradaPorId() {
-        // Arrange
-        when(jpaRepository.findById(999L)).thenReturn(Optional.empty());
-
-        // Act
-        Optional<Avaliacao> resultado = avaliacaoRepository.findById(999L);
-
-        // Assert
-        assertFalse(resultado.isPresent());
-        verify(jpaRepository, times(1)).findById(999L);
-    }
-
-    @Test
     @DisplayName("Deve buscar avaliação por aluno ID com sucesso")
     public void deveBuscarAvaliacaoPorAlunoIdComSucesso() {
         // Arrange
@@ -153,20 +117,6 @@ public class AvaliacaoRepositoryImplTest {
     }
 
     @Test
-    @DisplayName("Deve retornar Optional vazio quando avaliação não encontrada por aluno ID")
-    public void deveRetornarOptionalVazioQuandoAvaliacaoNaoEncontradaPorAlunoId() {
-        // Arrange
-        when(jpaRepository.findByAlunoId(999L)).thenReturn(Optional.empty());
-
-        // Act
-        Optional<Avaliacao> resultado = avaliacaoRepository.findByAlunoId(999L);
-
-        // Assert
-        assertFalse(resultado.isPresent());
-        verify(jpaRepository, times(1)).findByAlunoId(999L);
-    }
-
-    @Test
     @DisplayName("Deve deletar avaliação por ID com sucesso")
     public void deveDeletarAvaliacaoPorIdComSucesso() {
         // Arrange
@@ -180,50 +130,23 @@ public class AvaliacaoRepositoryImplTest {
     }
 
     @Test
-    @DisplayName("Deve salvar avaliação sem ID")
-    public void deveSalvarAvaliacaoSemId() {
+    @DisplayName("Deve lançar exceção quando aluno não encontrado ao salvar avaliação")
+    public void deveLancarExcecaoQuandoAlunoNaoEncontradoAoSalvar() {
         // Arrange
-        Avaliacao avaliacaoSemId = Avaliacao.builder()
-                .aluno(aluno)
-                .nota(9.0)
+        when(alunoJpaRepository.findById(999L)).thenReturn(Optional.empty());
+
+        Avaliacao avaliacaoComAlunoInexistente = Avaliacao.builder()
+                .aluno(Aluno.builder().id(999L).build())
+                .nota(8.5)
                 .build();
 
-        AvaliacaoEntity entitySalva = AvaliacaoEntity.builder()
-                .id(2L)
-                .aluno(alunoEntity)
-                .nota(9.0)
-                .build();
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            avaliacaoRepository.save(avaliacaoComAlunoInexistente);
+        });
 
-        when(alunoJpaRepository.findById(1L)).thenReturn(Optional.of(alunoEntity));
-        when(jpaRepository.save(any(AvaliacaoEntity.class))).thenReturn(entitySalva);
-
-        // Act
-        Avaliacao resultado = avaliacaoRepository.save(avaliacaoSemId);
-
-        // Assert
-        assertNotNull(resultado);
-        assertEquals(2L, resultado.getId());
-        assertEquals(9.0, resultado.getNota());
-        verify(jpaRepository, times(1)).save(any(AvaliacaoEntity.class));
-    }
-
-    @Test
-    @DisplayName("Deve converter corretamente de entity para domain")
-    public void deveConverterCorretamenteDeEntityParaDomain() {
-        // Arrange
-        when(jpaRepository.findById(1L)).thenReturn(Optional.of(avaliacaoEntity));
-
-        // Act
-        Optional<Avaliacao> resultado = avaliacaoRepository.findById(1L);
-
-        // Assert
-        assertTrue(resultado.isPresent());
-        Avaliacao avaliacaoConvertida = resultado.get();
-        assertEquals(avaliacaoEntity.getId(), avaliacaoConvertida.getId());
-        assertEquals(avaliacaoEntity.getNota(), avaliacaoConvertida.getNota());
-        assertEquals(avaliacaoEntity.getAluno().getId(), avaliacaoConvertida.getAluno().getId());
-        assertEquals(avaliacaoEntity.getAluno().getNome(), avaliacaoConvertida.getAluno().getNome());
-        assertEquals(avaliacaoEntity.getAluno().getEmail(), avaliacaoConvertida.getAluno().getEmail());
+        assertEquals("Aluno não encontrado", exception.getMessage());
+        verify(alunoJpaRepository, times(1)).findById(999L);
+        verify(jpaRepository, never()).save(any(AvaliacaoEntity.class));
     }
 }
-

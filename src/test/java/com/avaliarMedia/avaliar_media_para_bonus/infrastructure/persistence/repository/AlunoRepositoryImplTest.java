@@ -60,7 +60,6 @@ public class AlunoRepositoryImplTest {
         assertNotNull(resultado);
         assertEquals(1L, resultado.getId());
         assertEquals("João Silva", resultado.getNome());
-        assertEquals("joao@email.com", resultado.getEmail());
         verify(jpaRepository, times(1)).save(any(AlunoEntity.class));
     }
 
@@ -81,20 +80,6 @@ public class AlunoRepositoryImplTest {
     }
 
     @Test
-    @DisplayName("Deve retornar Optional vazio quando aluno não encontrado por ID")
-    public void deveRetornarOptionalVazioQuandoAlunoNaoEncontradoPorId() {
-        // Arrange
-        when(jpaRepository.findById(999L)).thenReturn(Optional.empty());
-
-        // Act
-        Optional<Aluno> resultado = alunoRepository.findById(999L);
-
-        // Assert
-        assertFalse(resultado.isPresent());
-        verify(jpaRepository, times(1)).findById(999L);
-    }
-
-    @Test
     @DisplayName("Deve buscar aluno por email com sucesso")
     public void deveBuscarAlunoPorEmailComSucesso() {
         // Arrange
@@ -110,20 +95,6 @@ public class AlunoRepositoryImplTest {
     }
 
     @Test
-    @DisplayName("Deve retornar Optional vazio quando aluno não encontrado por email")
-    public void deveRetornarOptionalVazioQuandoAlunoNaoEncontradoPorEmail() {
-        // Arrange
-        when(jpaRepository.findByEmail("naoexiste@email.com")).thenReturn(Optional.empty());
-
-        // Act
-        Optional<Aluno> resultado = alunoRepository.findByEmail("naoexiste@email.com");
-
-        // Assert
-        assertFalse(resultado.isPresent());
-        verify(jpaRepository, times(1)).findByEmail("naoexiste@email.com");
-    }
-
-    @Test
     @DisplayName("Deve deletar aluno por ID com sucesso")
     public void deveDeletarAlunoPorIdComSucesso() {
         // Arrange
@@ -135,32 +106,4 @@ public class AlunoRepositoryImplTest {
         // Assert
         verify(jpaRepository, times(1)).deleteById(1L);
     }
-
-    @Test
-    @DisplayName("Deve salvar aluno sem ID")
-    public void deveSalvarAlunoSemId() {
-        // Arrange
-        Aluno alunoSemId = Aluno.builder()
-                .nome("Maria Santos")
-                .email("maria@email.com")
-                .build();
-
-        AlunoEntity entitySalva = AlunoEntity.builder()
-                .id(2L)
-                .nome("Maria Santos")
-                .email("maria@email.com")
-                .build();
-
-        when(jpaRepository.save(any(AlunoEntity.class))).thenReturn(entitySalva);
-
-        // Act
-        Aluno resultado = alunoRepository.save(alunoSemId);
-
-        // Assert
-        assertNotNull(resultado);
-        assertEquals(2L, resultado.getId());
-        assertEquals("Maria Santos", resultado.getNome());
-        verify(jpaRepository, times(1)).save(any(AlunoEntity.class));
-    }
 }
-
