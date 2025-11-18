@@ -55,18 +55,4 @@ pipeline {
             }
         }
     }
-
-    post {
-        always {
-            echo 'Pipeline finalizado.'
-        }
-        success {
-            echo 'O build foi concluído com SUCESSO! Disparando job de imagem Docker...'
-
-            build job: 'pipeline-avaliacao-bonus-dev-docker', wait: false
-        }
-        failure {
-            echo 'O build FALHOU!'
-        }
-    }
 }
