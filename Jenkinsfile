@@ -67,7 +67,7 @@ pipeline {
             echo 'O build foi concluído com SUCESSO! Disparando job de imagem Docker...'
 
             // 🔥 CHAMA O FREESTYLE QUE VOCÊ CRIOU
-            build job: 'avaliacao-bonus-pipeline-docker', wait: false
+            build job: 'pipeline-avaliacao-bonus-dev-docker', wait: false
         }
         failure {
             echo 'O build FALHOU!'
