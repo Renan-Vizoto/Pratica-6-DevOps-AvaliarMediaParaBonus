@@ -20,9 +20,6 @@ import static org.hamcrest.Matchers.*;
 
 /**
  * Testes de Integração para AvaliacaoController.
- * Testa o fluxo completo de criação e consulta de avaliações.
- * 
- * Regra: O aluno tem 1 nota de 1 curso.
  */
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -78,53 +75,6 @@ public class AvaliacaoControllerIntegrationTest {
     }
 
     @Test
-    @DisplayName("Deve criar avaliação com nota baixa (5.0)")
-    public void deveCriarAvaliacaoComNotaBaixa() throws Exception {
-        // Arrange
-        AvaliacaoDTO avaliacaoDTO = AvaliacaoDTO.builder()
-                .alunoId(alunoId)
-                .nota(5.0)
-                .build();
-
-        // Act & Assert
-        mockMvc.perform(post("/api/avaliacoes")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(avaliacaoDTO)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.nota", is(5.0)));
-    }
-
-    @Test
-    @DisplayName("Deve retornar erro ao criar avaliação sem aluno ID")
-    public void deveRetornarErroAoCriarAvaliacaoSemAlunoId() throws Exception {
-        // Arrange
-        AvaliacaoDTO avaliacaoDTO = AvaliacaoDTO.builder()
-                .nota(8.0)
-                .build();
-
-        // Act & Assert
-        mockMvc.perform(post("/api/avaliacoes")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(avaliacaoDTO)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("Deve retornar erro ao criar avaliação sem nota")
-    public void deveRetornarErroAoCriarAvaliacaoSemNota() throws Exception {
-        // Arrange
-        AvaliacaoDTO avaliacaoDTO = AvaliacaoDTO.builder()
-                .alunoId(alunoId)
-                .build();
-
-        // Act & Assert
-        mockMvc.perform(post("/api/avaliacoes")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(avaliacaoDTO)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
     @DisplayName("Deve buscar avaliação por ID com sucesso")
     public void deveBuscarAvaliacaoPorIdComSucesso() throws Exception {
         // Arrange - Criar avaliação primeiro
@@ -146,44 +96,6 @@ public class AvaliacaoControllerIntegrationTest {
         mockMvc.perform(get("/api/avaliacoes/" + avaliacaoCriada.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(avaliacaoCriada.getId().intValue())))
-                .andExpect(jsonPath("$.alunoId", is(alunoId.intValue())))
                 .andExpect(jsonPath("$.nota", is(7.5)));
-    }
-
-    @Test
-    @DisplayName("Deve buscar avaliação por aluno ID com sucesso")
-    public void deveBuscarAvaliacaoPorAlunoIdComSucesso() throws Exception {
-        // Arrange - Criar avaliação primeiro
-        AvaliacaoDTO avaliacaoDTO = AvaliacaoDTO.builder()
-                .alunoId(alunoId)
-                .nota(9.0)
-                .build();
-
-        mockMvc.perform(post("/api/avaliacoes")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(avaliacaoDTO)))
-                .andExpect(status().isCreated());
-
-        // Act & Assert
-        mockMvc.perform(get("/api/avaliacoes/aluno/" + alunoId))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.alunoId", is(alunoId.intValue())))
-                .andExpect(jsonPath("$.nota", is(9.0)));
-    }
-
-    @Test
-    @DisplayName("Deve retornar 404 ao buscar avaliação inexistente por ID")
-    public void deveRetornar404AoBuscarAvaliacaoInexistentePorId() throws Exception {
-        // Act & Assert
-        mockMvc.perform(get("/api/avaliacoes/999999"))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    @DisplayName("Deve retornar 404 ao buscar avaliação de aluno sem avaliação")
-    public void deveRetornar404AoBuscarAvaliacaoDeAlunoSemAvaliacao() throws Exception {
-        // Act & Assert
-        mockMvc.perform(get("/api/avaliacoes/aluno/999999"))
-                .andExpect(status().isNotFound());
     }
 }

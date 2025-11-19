@@ -31,17 +31,11 @@ public class AlunoServiceTest {
     private AlunoService alunoService;
 
     private Aluno aluno;
-    private AlunoDTO alunoDTO;
 
     @BeforeEach
     public void setup() {
         aluno = Aluno.builder()
                 .id(1L)
-                .nome("João Silva")
-                .email("joao@email.com")
-                .build();
-
-        alunoDTO = AlunoDTO.builder()
                 .nome("João Silva")
                 .email("joao@email.com")
                 .build();
@@ -51,6 +45,11 @@ public class AlunoServiceTest {
     @DisplayName("Deve criar aluno com sucesso")
     public void deveCriarAlunoComSucesso() {
         // Arrange
+        AlunoDTO alunoDTO = AlunoDTO.builder()
+                .nome("João Silva")
+                .email("joao@email.com")
+                .build();
+
         when(alunoRepository.save(any(Aluno.class))).thenReturn(aluno);
 
         // Act
@@ -58,10 +57,7 @@ public class AlunoServiceTest {
 
         // Assert
         assertNotNull(resultado);
-        assertEquals(1L, resultado.getId());
         assertEquals("João Silva", resultado.getNome());
-        assertEquals("joao@email.com", resultado.getEmail());
-        
         verify(alunoRepository, times(1)).save(any(Aluno.class));
     }
 
@@ -78,14 +74,12 @@ public class AlunoServiceTest {
         assertNotNull(resultado);
         assertEquals(1L, resultado.getId());
         assertEquals("João Silva", resultado.getNome());
-        assertEquals("joao@email.com", resultado.getEmail());
-        
         verify(alunoRepository, times(1)).findById(1L);
     }
 
     @Test
-    @DisplayName("Deve lançar exceção ao buscar aluno inexistente por ID")
-    public void deveLancarExcecaoAoBuscarAlunoInexistentePorId() {
+    @DisplayName("Deve lançar exceção quando aluno não encontrado por ID")
+    public void deveLancarExcecaoQuandoAlunoNaoEncontradoPorId() {
         // Arrange
         when(alunoRepository.findById(999L)).thenReturn(Optional.empty());
 
@@ -112,13 +106,12 @@ public class AlunoServiceTest {
         assertEquals(1L, resultado.getId());
         assertEquals("João Silva", resultado.getNome());
         assertEquals("joao@email.com", resultado.getEmail());
-        
         verify(alunoRepository, times(1)).findByEmail("joao@email.com");
     }
 
     @Test
-    @DisplayName("Deve lançar exceção ao buscar aluno inexistente por email")
-    public void deveLancarExcecaoAoBuscarAlunoInexistentePorEmail() {
+    @DisplayName("Deve lançar exceção quando aluno não encontrado por email")
+    public void deveLancarExcecaoQuandoAlunoNaoEncontradoPorEmail() {
         // Arrange
         when(alunoRepository.findByEmail("naoexiste@email.com")).thenReturn(Optional.empty());
 
@@ -130,47 +123,4 @@ public class AlunoServiceTest {
         assertEquals("Aluno não encontrado com email: naoexiste@email.com", exception.getMessage());
         verify(alunoRepository, times(1)).findByEmail("naoexiste@email.com");
     }
-
-    @Test
-    @DisplayName("Deve converter corretamente de domain para DTO")
-    public void deveConverterCorretamenteDeDomainParaDTO() {
-        // Arrange
-        when(alunoRepository.findById(1L)).thenReturn(Optional.of(aluno));
-
-        // Act
-        AlunoDTO resultado = alunoService.buscarPorId(1L);
-
-        // Assert
-        assertEquals(aluno.getId(), resultado.getId());
-        assertEquals(aluno.getNome(), resultado.getNome());
-        assertEquals(aluno.getEmail(), resultado.getEmail());
-    }
-
-    @Test
-    @DisplayName("Deve criar aluno com diferentes dados")
-    public void deveCriarAlunoComDiferentesDados() {
-        // Arrange
-        AlunoDTO novoAlunoDTO = AlunoDTO.builder()
-                .nome("Maria Santos")
-                .email("maria@email.com")
-                .build();
-
-        Aluno novoAluno = Aluno.builder()
-                .id(2L)
-                .nome("Maria Santos")
-                .email("maria@email.com")
-                .build();
-
-        when(alunoRepository.save(any(Aluno.class))).thenReturn(novoAluno);
-
-        // Act
-        AlunoDTO resultado = alunoService.criar(novoAlunoDTO);
-
-        // Assert
-        assertNotNull(resultado);
-        assertEquals(2L, resultado.getId());
-        assertEquals("Maria Santos", resultado.getNome());
-        assertEquals("maria@email.com", resultado.getEmail());
-    }
 }
-

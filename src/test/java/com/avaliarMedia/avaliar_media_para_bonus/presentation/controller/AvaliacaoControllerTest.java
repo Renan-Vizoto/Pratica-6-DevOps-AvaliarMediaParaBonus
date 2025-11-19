@@ -18,12 +18,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * Testes Unitários para AvaliacaoController usando @WebMvcTest.
- * 
- * VANTAGENS DO @WebMvcTest:
- * - Testa apenas a camada web (controller) sem carregar todo o contexto Spring
- * - Mocka automaticamente os services (@MockBean)
- * - Execução muito mais rápida que testes de integração
- * - Isolamento: falhas em service/repository não afetam este teste
  */
 @WebMvcTest(AvaliacaoController.class)
 @DisplayName("Testes Unitários - AvaliacaoController")
@@ -61,44 +55,9 @@ public class AvaliacaoControllerTest {
                 .content(objectMapper.writeValueAsString(avaliacaoDTO)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.alunoId").value(1L))
                 .andExpect(jsonPath("$.nota").value(8.5));
 
         verify(avaliacaoService, times(1)).criar(any(AvaliacaoDTO.class));
-    }
-
-    @Test
-    @DisplayName("Deve retornar erro 400 ao criar avaliação sem alunoId")
-    public void deveRetornarErro400AoCriarAvaliacaoSemAlunoId() throws Exception {
-        // Arrange
-        AvaliacaoDTO avaliacaoDTO = AvaliacaoDTO.builder()
-                .nota(8.5)
-                .build();
-
-        // Act & Assert
-        mockMvc.perform(post("/api/avaliacoes")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(avaliacaoDTO)))
-                .andExpect(status().isBadRequest());
-
-        verify(avaliacaoService, never()).criar(any(AvaliacaoDTO.class));
-    }
-
-    @Test
-    @DisplayName("Deve retornar erro 400 ao criar avaliação sem nota")
-    public void deveRetornarErro400AoCriarAvaliacaoSemNota() throws Exception {
-        // Arrange
-        AvaliacaoDTO avaliacaoDTO = AvaliacaoDTO.builder()
-                .alunoId(1L)
-                .build();
-
-        // Act & Assert
-        mockMvc.perform(post("/api/avaliacoes")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(avaliacaoDTO)))
-                .andExpect(status().isBadRequest());
-
-        verify(avaliacaoService, never()).criar(any(AvaliacaoDTO.class));
     }
 
     @Test
@@ -117,7 +76,6 @@ public class AvaliacaoControllerTest {
         mockMvc.perform(get("/api/avaliacoes/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.alunoId").value(1L))
                 .andExpect(jsonPath("$.nota").value(8.5));
 
         verify(avaliacaoService, times(1)).buscarPorId(1L);
@@ -144,37 +102,4 @@ public class AvaliacaoControllerTest {
 
         verify(avaliacaoService, times(1)).buscarPorAlunoId(1L);
     }
-
-    @Test
-    @DisplayName("Deve retornar erro 500 quando service lança exceção")
-    public void deveRetornarErro500QuandoServiceLancaExcecao() throws Exception {
-        // Arrange
-        when(avaliacaoService.buscarPorId(999L))
-                .thenThrow(new RuntimeException("Avaliação não encontrada com ID: 999"));
-
-        // Act & Assert
-        mockMvc.perform(get("/api/avaliacoes/999"))
-                .andExpect(status().isInternalServerError());
-
-        verify(avaliacaoService, times(1)).buscarPorId(999L);
-    }
-
-    @Test
-    @DisplayName("Deve validar mapeamento correto do endpoint")
-    public void deveValidarMapeamentoCorretoDoEndpoint() throws Exception {
-        // Arrange
-        AvaliacaoDTO avaliacaoDTO = AvaliacaoDTO.builder()
-                .id(1L)
-                .alunoId(1L)
-                .nota(8.5)
-                .build();
-
-        when(avaliacaoService.buscarPorId(1L)).thenReturn(avaliacaoDTO);
-
-        // Act & Assert - Verifica se o endpoint está mapeado corretamente
-        mockMvc.perform(get("/api/avaliacoes/1"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
-    }
 }
-

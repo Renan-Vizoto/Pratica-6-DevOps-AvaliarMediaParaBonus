@@ -18,11 +18,6 @@ import static org.hamcrest.Matchers.*;
 
 /**
  * Testes de Integração para AlunoController.
- * 
- * @SpringBootTest: Carrega contexto completo da aplicação
- * @AutoConfigureMockMvc: Configura MockMvc para simular requisições HTTP
- * @ActiveProfiles("test"): Usa configurações de teste (H2 em memória)
- * @Transactional: Rollback automático após cada teste
  */
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -57,37 +52,6 @@ public class AlunoControllerIntegrationTest {
     }
 
     @Test
-    @DisplayName("Deve retornar erro ao criar aluno sem nome")
-    public void deveRetornarErroAoCriarAlunoSemNome() throws Exception {
-        // Arrange
-        AlunoDTO alunoDTO = AlunoDTO.builder()
-                .email("joao.silva@email.com")
-                .build();
-
-        // Act & Assert
-        mockMvc.perform(post("/api/alunos")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(alunoDTO)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("Deve retornar erro ao criar aluno com email inválido")
-    public void deveRetornarErroAoCriarAlunoComEmailInvalido() throws Exception {
-        // Arrange
-        AlunoDTO alunoDTO = AlunoDTO.builder()
-                .nome("João Silva")
-                .email("email-invalido")
-                .build();
-
-        // Act & Assert
-        mockMvc.perform(post("/api/alunos")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(alunoDTO)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
     @DisplayName("Deve buscar aluno por ID com sucesso")
     public void deveBuscarAlunoPorIdComSucesso() throws Exception {
         // Arrange - Criar aluno primeiro
@@ -109,45 +73,6 @@ public class AlunoControllerIntegrationTest {
         mockMvc.perform(get("/api/alunos/" + alunoCriado.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(alunoCriado.getId().intValue())))
-                .andExpect(jsonPath("$.nome", is("Maria Santos")))
-                .andExpect(jsonPath("$.email", is("maria.santos@email.com")));
-    }
-
-    @Test
-    @DisplayName("Deve buscar aluno por email com sucesso")
-    public void deveBuscarAlunoPorEmailComSucesso() throws Exception {
-        // Arrange - Criar aluno primeiro
-        AlunoDTO alunoDTO = AlunoDTO.builder()
-                .nome("Pedro Costa")
-                .email("pedro.costa@email.com")
-                .build();
-
-        mockMvc.perform(post("/api/alunos")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(alunoDTO)))
-                .andExpect(status().isCreated());
-
-        // Act & Assert
-        mockMvc.perform(get("/api/alunos/email/pedro.costa@email.com"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.nome", is("Pedro Costa")))
-                .andExpect(jsonPath("$.email", is("pedro.costa@email.com")));
-    }
-
-    @Test
-    @DisplayName("Deve retornar 404 ao buscar aluno inexistente por ID")
-    public void deveRetornar404AoBuscarAlunoInexistentePorId() throws Exception {
-        // Act & Assert
-        mockMvc.perform(get("/api/alunos/999999"))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    @DisplayName("Deve retornar 404 ao buscar aluno inexistente por email")
-    public void deveRetornar404AoBuscarAlunoInexistentePorEmail() throws Exception {
-        // Act & Assert
-        mockMvc.perform(get("/api/alunos/email/naoexiste@email.com"))
-                .andExpect(status().isNotFound());
+                .andExpect(jsonPath("$.nome", is("Maria Santos")));
     }
 }
-

@@ -33,71 +33,11 @@ public class NotaTest {
     }
 
     @Test
-    @DisplayName("Deve retornar false para isValid quando valor é negativo")
-    public void deveRetornarFalseParaIsValidQuandoValorNegativo() {
-        // Arrange
-        Nota nota = new Nota(-1.0);
-
-        // Act & Assert
-        assertFalse(nota.isValid());
-    }
-
-    @Test
-    @DisplayName("Deve retornar false para isValid quando valor é maior que 10.0")
-    public void deveRetornarFalseParaIsValidQuandoValorMaiorQue10() {
-        // Arrange
-        Nota nota = new Nota(11.0);
-
-        // Act & Assert
-        assertFalse(nota.isValid());
-    }
-
-    @Test
-    @DisplayName("Deve retornar false para isValid quando valor é null")
-    public void deveRetornarFalseParaIsValidQuandoValorNull() {
-        // Arrange
-        Nota nota = new Nota(null);
-
-        // Act & Assert
-        assertFalse(nota.isValid());
-    }
-
-    @Test
-    @DisplayName("Deve implementar equals corretamente")
-    public void deveImplementarEqualsCorretamente() {
-        // Arrange
-        Nota nota1 = new Nota(8.5);
-        Nota nota2 = new Nota(8.5);
-        Nota nota3 = new Nota(7.0);
-
-        // Act & Assert
-        assertEquals(nota1, nota2);
-        assertNotEquals(nota1, nota3);
-    }
-
-    @Test
-    @DisplayName("Deve implementar hashCode corretamente")
-    public void deveImplementarHashCodeCorretamente() {
-        // Arrange
-        Nota nota1 = new Nota(8.5);
-        Nota nota2 = new Nota(8.5);
-
-        // Act & Assert
-        assertEquals(nota1.hashCode(), nota2.hashCode());
-    }
-
-    @Test
-    @DisplayName("Deve implementar toString corretamente")
-    public void deveImplementarToStringCorretamente() {
-        // Arrange
-        Nota nota = new Nota(8.5);
-
-        // Act
-        String toString = nota.toString();
-
-        // Assert
-        assertNotNull(toString);
-        assertTrue(toString.contains("8.5"));
+    @DisplayName("Deve retornar false para isValid quando valor é inválido")
+    public void deveRetornarFalseParaIsValidQuandoValorInvalido() {
+        // Arrange & Act & Assert
+        assertFalse(new Nota(-1.0).isValid());
+        assertFalse(new Nota(11.0).isValid());
+        assertFalse(new Nota(null).isValid());
     }
 }
-

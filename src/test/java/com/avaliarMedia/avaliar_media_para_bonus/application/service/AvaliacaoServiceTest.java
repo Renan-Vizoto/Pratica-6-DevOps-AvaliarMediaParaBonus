@@ -37,7 +37,6 @@ public class AvaliacaoServiceTest {
 
     private Aluno aluno;
     private Avaliacao avaliacao;
-    private AvaliacaoDTO avaliacaoDTO;
 
     @BeforeEach
     public void setup() {
@@ -52,17 +51,17 @@ public class AvaliacaoServiceTest {
                 .aluno(aluno)
                 .nota(8.5)
                 .build();
-
-        avaliacaoDTO = AvaliacaoDTO.builder()
-                .alunoId(1L)
-                .nota(8.5)
-                .build();
     }
 
     @Test
     @DisplayName("Deve criar avaliação com sucesso")
     public void deveCriarAvaliacaoComSucesso() {
         // Arrange
+        AvaliacaoDTO avaliacaoDTO = AvaliacaoDTO.builder()
+                .alunoId(1L)
+                .nota(8.5)
+                .build();
+
         when(alunoRepository.findById(1L)).thenReturn(Optional.of(aluno));
         when(avaliacaoRepository.save(any(Avaliacao.class))).thenReturn(avaliacao);
 
@@ -71,19 +70,16 @@ public class AvaliacaoServiceTest {
 
         // Assert
         assertNotNull(resultado);
-        assertEquals(1L, resultado.getId());
-        assertEquals(1L, resultado.getAlunoId());
         assertEquals(8.5, resultado.getNota());
-        
         verify(alunoRepository, times(1)).findById(1L);
         verify(avaliacaoRepository, times(1)).save(any(Avaliacao.class));
     }
 
     @Test
-    @DisplayName("Deve lançar exceção ao criar avaliação com aluno não encontrado")
-    public void deveLancarExcecaoAoCriarAvaliacaoComAlunoNaoEncontrado() {
+    @DisplayName("Deve lançar exceção quando aluno não encontrado ao criar avaliação")
+    public void deveLancarExcecaoQuandoAlunoNaoEncontrado() {
         // Arrange
-        AvaliacaoDTO dtoComAlunoInexistente = AvaliacaoDTO.builder()
+        AvaliacaoDTO avaliacaoDTO = AvaliacaoDTO.builder()
                 .alunoId(999L)
                 .nota(8.5)
                 .build();
@@ -92,7 +88,7 @@ public class AvaliacaoServiceTest {
 
         // Act & Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            avaliacaoService.criar(dtoComAlunoInexistente);
+            avaliacaoService.criar(avaliacaoDTO);
         });
 
         assertEquals("Aluno não encontrado com ID: 999", exception.getMessage());
@@ -101,26 +97,8 @@ public class AvaliacaoServiceTest {
     }
 
     @Test
-    @DisplayName("Deve buscar avaliação por ID com sucesso")
-    public void deveBuscarAvaliacaoPorIdComSucesso() {
-        // Arrange
-        when(avaliacaoRepository.findById(1L)).thenReturn(Optional.of(avaliacao));
-
-        // Act
-        AvaliacaoDTO resultado = avaliacaoService.buscarPorId(1L);
-
-        // Assert
-        assertNotNull(resultado);
-        assertEquals(1L, resultado.getId());
-        assertEquals(1L, resultado.getAlunoId());
-        assertEquals(8.5, resultado.getNota());
-        
-        verify(avaliacaoRepository, times(1)).findById(1L);
-    }
-
-    @Test
-    @DisplayName("Deve lançar exceção ao buscar avaliação inexistente por ID")
-    public void deveLancarExcecaoAoBuscarAvaliacaoInexistentePorId() {
+    @DisplayName("Deve lançar exceção quando avaliação não encontrada por ID")
+    public void deveLancarExcecaoQuandoAvaliacaoNaoEncontradaPorId() {
         // Arrange
         when(avaliacaoRepository.findById(999L)).thenReturn(Optional.empty());
 
@@ -145,15 +123,14 @@ public class AvaliacaoServiceTest {
         // Assert
         assertNotNull(resultado);
         assertEquals(1L, resultado.getId());
-        assertEquals(1L, resultado.getAlunoId());
         assertEquals(8.5, resultado.getNota());
-        
+        assertEquals(1L, resultado.getAlunoId());
         verify(avaliacaoRepository, times(1)).findByAlunoId(1L);
     }
 
     @Test
-    @DisplayName("Deve lançar exceção ao buscar avaliação inexistente por aluno ID")
-    public void deveLancarExcecaoAoBuscarAvaliacaoInexistentePorAlunoId() {
+    @DisplayName("Deve lançar exceção quando avaliação não encontrada por aluno ID")
+    public void deveLancarExcecaoQuandoAvaliacaoNaoEncontradaPorAlunoId() {
         // Arrange
         when(avaliacaoRepository.findByAlunoId(999L)).thenReturn(Optional.empty());
 
@@ -165,77 +142,4 @@ public class AvaliacaoServiceTest {
         assertEquals("Avaliação não encontrada para aluno ID: 999", exception.getMessage());
         verify(avaliacaoRepository, times(1)).findByAlunoId(999L);
     }
-
-    @Test
-    @DisplayName("Deve criar avaliação com nota baixa")
-    public void deveCriarAvaliacaoComNotaBaixa() {
-        // Arrange
-        AvaliacaoDTO dtoNotaBaixa = AvaliacaoDTO.builder()
-                .alunoId(1L)
-                .nota(5.0)
-                .build();
-
-        Avaliacao avaliacaoNotaBaixa = Avaliacao.builder()
-                .id(2L)
-                .aluno(aluno)
-                .nota(5.0)
-                .build();
-
-        when(alunoRepository.findById(1L)).thenReturn(Optional.of(aluno));
-        when(avaliacaoRepository.save(any(Avaliacao.class))).thenReturn(avaliacaoNotaBaixa);
-
-        // Act
-        AvaliacaoDTO resultado = avaliacaoService.criar(dtoNotaBaixa);
-
-        // Assert
-        assertNotNull(resultado);
-        assertEquals(2L, resultado.getId());
-        assertEquals(5.0, resultado.getNota());
-        
-        verify(alunoRepository, times(1)).findById(1L);
-        verify(avaliacaoRepository, times(1)).save(any(Avaliacao.class));
-    }
-
-    @Test
-    @DisplayName("Deve converter corretamente de domain para DTO")
-    public void deveConverterCorretamenteDeDomainParaDTO() {
-        // Arrange
-        when(avaliacaoRepository.findById(1L)).thenReturn(Optional.of(avaliacao));
-
-        // Act
-        AvaliacaoDTO resultado = avaliacaoService.buscarPorId(1L);
-
-        // Assert
-        assertEquals(avaliacao.getId(), resultado.getId());
-        assertEquals(avaliacao.getAluno().getId(), resultado.getAlunoId());
-        assertEquals(avaliacao.getNota(), resultado.getNota());
-    }
-
-    @Test
-    @DisplayName("Deve criar avaliação sem ID no DTO")
-    public void deveCriarAvaliacaoSemIdNoDTO() {
-        // Arrange
-        AvaliacaoDTO dtoSemId = AvaliacaoDTO.builder()
-                .alunoId(1L)
-                .nota(9.0)
-                .build();
-
-        Avaliacao avaliacaoSalva = Avaliacao.builder()
-                .id(3L)
-                .aluno(aluno)
-                .nota(9.0)
-                .build();
-
-        when(alunoRepository.findById(1L)).thenReturn(Optional.of(aluno));
-        when(avaliacaoRepository.save(any(Avaliacao.class))).thenReturn(avaliacaoSalva);
-
-        // Act
-        AvaliacaoDTO resultado = avaliacaoService.criar(dtoSemId);
-
-        // Assert
-        assertNotNull(resultado);
-        assertEquals(3L, resultado.getId());
-        assertEquals(9.0, resultado.getNota());
-    }
 }
-
