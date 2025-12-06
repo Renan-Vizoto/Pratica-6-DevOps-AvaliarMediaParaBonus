@@ -1,13 +1,16 @@
 package com.avaliarMedia.avaliar_media_para_bonus.application.service;
 
 import com.avaliarMedia.avaliar_media_para_bonus.application.dto.BonusResponseDTO;
+import com.avaliarMedia.avaliar_media_para_bonus.domain.event.BonusConcedidoEvent;
 import com.avaliarMedia.avaliar_media_para_bonus.domain.valueobject.Media;
 import com.avaliarMedia.avaliar_media_para_bonus.domain.valueobject.QuantidadeCursos;
 import com.avaliarMedia.avaliar_media_para_bonus.domain.entity.Aluno;
 import com.avaliarMedia.avaliar_media_para_bonus.domain.entity.Avaliacao;
 import com.avaliarMedia.avaliar_media_para_bonus.domain.repository.AlunoRepository;
 import com.avaliarMedia.avaliar_media_para_bonus.domain.repository.AvaliacaoRepository;
+import com.avaliarMedia.avaliar_media_para_bonus.infrastructure.messaging.BonusEventPublisher;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,10 +21,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 public class BonusService {
     
     private final AlunoRepository alunoRepository;
     private final AvaliacaoRepository avaliacaoRepository;
+    private final BonusEventPublisher eventPublisher;
     
     /**
      * Calcula o bônus baseado na nota do aluno.
@@ -46,7 +51,7 @@ public class BonusService {
         QuantidadeCursos quantidade = QuantidadeCursos.calcularPorNota(avaliacao.getNota());
         boolean elegivel = quantidade.getQuantidade() > 0;
         
-        return BonusResponseDTO.builder()
+        BonusResponseDTO response = BonusResponseDTO.builder()
                 .alunoId(aluno.getId())
                 .nomeAluno(aluno.getNome())
                 .nota(avaliacao.getNota())
@@ -54,6 +59,20 @@ public class BonusService {
                 .quantidadeCursosBonus(quantidade.getQuantidade())
                 .descricao(gerarDescricao(avaliacao.getNota(), quantidade.getQuantidade()))
                 .build();
+        
+        // Publica evento no Kafka se bônus foi concedido
+        if (elegivel) {
+            BonusConcedidoEvent event = new BonusConcedidoEvent(
+                    aluno.getId(),
+                    aluno.getNome(),
+                    avaliacao.getNota(),
+                    quantidade.getQuantidade()
+            );
+            eventPublisher.publicarBonusConcedido(event);
+            log.info("Evento de bônus publicado no Kafka para aluno {}", aluno.getId());
+        }
+        
+        return response;
     }
     
     private String gerarDescricao(Double nota, Integer quantidadeBonus) {

@@ -5,6 +5,7 @@ import com.avaliarMedia.avaliar_media_para_bonus.domain.entity.Aluno;
 import com.avaliarMedia.avaliar_media_para_bonus.domain.entity.Avaliacao;
 import com.avaliarMedia.avaliar_media_para_bonus.domain.repository.AlunoRepository;
 import com.avaliarMedia.avaliar_media_para_bonus.domain.repository.AvaliacaoRepository;
+import com.avaliarMedia.avaliar_media_para_bonus.infrastructure.messaging.BonusEventPublisher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,6 +31,9 @@ public class BonusServiceTest {
 
     @Mock
     private AvaliacaoRepository avaliacaoRepository;
+    
+    @Mock
+    private BonusEventPublisher eventPublisher;
 
     @InjectMocks
     private BonusService bonusService;
@@ -81,6 +85,7 @@ public class BonusServiceTest {
         
         verify(alunoRepository, times(1)).findById(1L);
         verify(avaliacaoRepository, times(1)).findByAlunoId(1L);
+        verify(eventPublisher, times(1)).publicarBonusConcedido(any());
     }
 
     @Test
@@ -104,6 +109,7 @@ public class BonusServiceTest {
         
         verify(alunoRepository, times(1)).findById(1L);
         verify(avaliacaoRepository, times(1)).findByAlunoId(1L);
+        verify(eventPublisher, never()).publicarBonusConcedido(any());
     }
 
     @Test

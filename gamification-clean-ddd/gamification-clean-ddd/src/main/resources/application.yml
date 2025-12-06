@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: gamification-ddd
+
+  kafka:
+    bootstrap-servers: localhost:9094
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      group-id: gamification-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      auto-offset-reset: earliest
+
+  rabbitmq:
+    host: localhost
+    port: 5673
+    username: admin
+    password: admin123
+
+mqtt:
+  broker: tcp://localhost:1884
+  clientId: gamification-app
+  topic: gamification/logs
+
+logging:
+  level:
+    root: INFO
+    org.springframework.kafka: DEBUG
+

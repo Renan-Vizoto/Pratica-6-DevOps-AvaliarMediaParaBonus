@@ -1,0 +1,57 @@
+services:
+
+  rabbitmq-gamification:
+    image: rabbitmq:3.12-management
+    container_name: rabbitmq-gamification
+    ports:
+      - "5673:5672"
+      - "15673:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin123
+    networks:
+      - infra-net
+
+  kafka-gamification:
+    image: apache/kafka:3.7.0
+    container_name: kafka-gamification
+    ports:
+      - "9094:9092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: "broker,controller"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@localhost:9093"
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://host.docker.internal:9094
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT"
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
+    networks:
+      - infra-net
+
+  mqtt-gamification:
+    image: eclipse-mosquitto:2.0
+    container_name: mqtt-gamification
+    ports:
+      - "1884:1883"
+      - "9002:9001"
+    networks:
+      - infra-net
+   # volumes:
+    #  - ./mosquitto-config:/mosquitto/config
+
+  mongo-gamification:
+    image: mongo:7
+    container_name: mongo-gamification
+    ports:
+      - "27018:27017"
+    networks:
+      - infra-net
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin123
+
+networks:
+  infra-net:
+    driver: bridge
+    
